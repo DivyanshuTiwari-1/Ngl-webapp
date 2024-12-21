@@ -1,4 +1,4 @@
-import {z} from zod
+import {z} from "zod"
 export const userNamevaildation =z
  .string()
  .max(20," username must not be more then 20 characters ")
@@ -9,6 +9,6 @@ export const userNamevaildation =z
  export const signupSchema=z.object({
     userName:userNamevaildation,
     password:z.string().max(8,"password be less than 8 char"),
-    email:z.email({message:"invaild email address"})
+    email:z.string({message:"invaild email address"})
 
  })

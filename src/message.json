@@ -1,0 +1,18 @@
+[
+    {
+      "title": "Welcome Message",
+      "content": "Hello and welcome to our platform!",
+      "description": "This is a warm welcome message for new users who have just joined."
+    },
+    {
+      "title": "Reminder",
+      "content": "Don't forget to complete your profile setup.",
+      "description": "This reminder helps users ensure their profile is complete for better engagement."
+    },
+    {
+      "title": "Promotion",
+      "content": "Limited-time offer! Get 20% off on your subscription.",
+      "description": "Promotional message for users to encourage them to subscribe to premium features."
+    }
+  ]
+  

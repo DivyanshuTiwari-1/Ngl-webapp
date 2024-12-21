@@ -1,6 +1,6 @@
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User";
-import { userNamevaildation } from "@/schemas/signupSchema";
+import { userNamevaildation } from "@/app/schemas/signupSchema";
 import { NextRequest } from "next/server";
 import { z } from "zod"
 const userNamequeryVaildation = z.object({
