@@ -28,8 +28,13 @@
         "embla-carousel-react": "^8.5.1",
         "lucide-react": "^0.462.0",
         "mongoose": "^8.5.2",
+<<<<<<< HEAD
         "next": "^15.0.4-canary.49",
         "next-auth": "^4.24.7",
+=======
+        "next": "14.2.5",
+        "next-auth": "^4.24.8",
+>>>>>>> 08ac1c3d40b606a115a7233c3ac5d244d1478bc4
         "react": "^18",
         "react-dom": "^18",
         "react-hook-form": "^7.53.2",
