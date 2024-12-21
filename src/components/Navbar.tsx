@@ -9,6 +9,7 @@ import { Button } from './ui/button';
 
 
 
+
   const Navbar = () => {
   const { data: session } = useSession();
 
@@ -21,12 +22,18 @@ import { Button } from './ui/button';
           {session ? (
             <>
               <span>Welcome, {user.username || user.email}</span>
+              
               <Button onClick={() => signOut()}>Logout</Button>
             </>
           ) : (
+            <>
+            
+
             <Link href='/sign-in'>
+
               <Button>Login</Button>
             </Link>
+            </>
           )}
         </div>
       </nav>

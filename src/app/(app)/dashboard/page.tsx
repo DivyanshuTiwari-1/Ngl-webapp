@@ -15,7 +15,7 @@ import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-const Page = () => { // Capitalized "Page" to follow React component conventions
+const Page = () => { 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
@@ -116,11 +116,11 @@ const Page = () => { // Capitalized "Page" to follow React component conventions
   if (!session || !session.user) {
     return <div>Please login</div>;
   }
-
-  const { userName } = session?.user as User;
+  console.log(session);
+  const { username } = session?.user;
 
   const baseUrl = `${window.location.protocol}//${window.location.host}`;
-  const profileUrl = `${baseUrl}/u/${userName}`;
+  const profileUrl = `${baseUrl}/u/${username}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileUrl);

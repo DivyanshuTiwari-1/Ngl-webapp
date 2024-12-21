@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { signinSchema } from "@/app/schemas/signinSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 
 import {
   Form,
@@ -23,6 +24,11 @@ import { Button } from "@/components/ui/button";
 const Page = () => {
   const { toast } = useToast();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Zod form validation using react-hook-form
   const form = useForm<z.infer<typeof signinSchema>>({
@@ -34,32 +40,43 @@ const Page = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof signinSchema>) => {
-    const result = await signIn("credentials", {
-      redirect: true,
-      identifier: data.identifier,
-      password: data.password,
-    });
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        identifier: data.identifier,
+        password: data.password,
+      });
 
-    if (result?.error) {
-      if (result.error === "CredentialsSignin") {
-        toast({
-          title: "Login failed",
-          description: "Incorrect username or password",
-          variant: "destructive",
-        });
+      if (result?.error) {
+        if (result.error === "CredentialsSignin") {
+          toast({
+            title: "Login failed",
+            description: "Incorrect username or password",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: result.error,
+            variant: "destructive",
+          });
+        }
       } else {
-        toast({
-          title: "Error",
-          description: result.error,
-          variant: "destructive",
-        });
+        router.replace("/dashboard"); // Explicitly redirect to the dashboard
       }
-    }
-
-    if (result?.url) {
-      router.replace("/Dashboard");
+    } catch (error) {
+      console.error('An error occurred during sign-in:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
     }
   };
+
+  if (!mounted) {
+    return null; // Prevent rendering until the component is mounted
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">

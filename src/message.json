@@ -1,18 +1,62 @@
 [
-    {
-      "title": "Welcome Message",
-      "content": "Hello and welcome to our platform!",
-      "description": "This is a warm welcome message for new users who have just joined."
-    },
-    {
-      "title": "Reminder",
-      "content": "Don't forget to complete your profile setup.",
-      "description": "This reminder helps users ensure their profile is complete for better engagement."
-    },
-    {
-      "title": "Promotion",
-      "content": "Limited-time offer! Get 20% off on your subscription.",
-      "description": "Promotional message for users to encourage them to subscribe to premium features."
-    }
-  ]
-  
+  {
+    "title": "Welcome Message",
+    "content": "Hello and welcome to our platform!",
+    "description": "This is a warm welcome message for new users who have just joined."
+  },
+  {
+    "title": "Reminder",
+    "content": "Don't forget to complete your profile setup.",
+    "description": "This reminder helps users ensure their profile is complete for better engagement."
+  },
+  {
+    "title": "Promotion",
+    "content": "Limited-time offer! Get 20% off on your subscription.",
+    "description": "Promotional message for users to encourage them to subscribe to premium features."
+  },
+  {
+    "title": "Daily Tip",
+    "content": "Did you know? You can schedule messages to send later!",
+    "description": "A daily tip to help users discover new features of the platform."
+  },
+  {
+    "title": "Security Alert",
+    "content": "Remember to enable two-factor authentication for added security.",
+    "description": "Encouraging users to take steps to secure their accounts."
+  },
+  {
+    "title": "Event Announcement",
+    "content": "Join our live webinar this Friday at 5 PM!",
+    "description": "An invitation to a community event or webinar."
+  },
+  {
+    "title": "Milestone",
+    "content": "Congratulations on sending your 100th message!",
+    "description": "Celebrate user achievements to build a positive experience."
+  },
+  {
+    "title": "Feedback Request",
+    "content": "We value your feedback. Let us know how we're doing!",
+    "description": "Encourages users to provide feedback to improve the platform."
+  },
+  {
+    "title": "New Feature",
+    "content": "Check out our new dark mode feature in the settings!",
+    "description": "Announces a new feature to keep users engaged."
+  },
+  {
+    "title": "Inspiration",
+    "content": "Your words have the power to inspire. Keep sharing your thoughts!",
+    "description": "Motivational message to encourage active participation."
+  },
+  {
+    "title": "Exclusive Invite",
+    "content": "You’re invited to our exclusive beta testing program!",
+    "description": "Personalized message for select users to test new features."
+  },
+  {
+    "title": "System Update",
+    "content": "Our platform will undergo maintenance on Saturday from 2 AM to 4 AM.",
+    "description": "Keeps users informed about scheduled system downtime."
+  }
+]
