@@ -21,8 +21,7 @@ import { Button } from './ui/button';
           <a className="text-xl font-bold mb-4 md:mb-0" href="#"></a>
           {session ? (
             <>
-              <span>Welcome, {user.username || user.email}</span>
-              
+              <span>Welcome, {user.userName || user.email}</span>
               <Button onClick={() => signOut()}>Logout</Button>
             </>
           ) : (

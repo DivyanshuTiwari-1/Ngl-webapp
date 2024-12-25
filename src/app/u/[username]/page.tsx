@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useForm, FormProvider } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,46 +18,41 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { MessageSchema } from "@/schemas/messageSchema";
 
-const sendMessageSchema = z.object({
-  content: z.string().min(1, "Message cannot be empty."),
-});
 
-type SendMessageForm = z.infer<typeof sendMessageSchema>;
+type SendMessageForm = z.infer<typeof MessageSchema>;
 
 export default function ProfilePage() {
-  const [username, setUsername] = useState<string>("");
   const [responses, setResponses] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
-  const searchParams = useSearchParams();
-
+  const params = useParams(); // Use this for dynamic route params
+  const { userName } = params; // Destructure `userName` from route params
+ console.log(userName);
   const form = useForm<SendMessageForm>({
-    resolver: zodResolver(sendMessageSchema),
+    resolver: zodResolver(MessageSchema),
     defaultValues: {
       content: "",
     },
   });
 
   useEffect(() => {
-    const user = searchParams.get("username");
-    if (user) {
-      setUsername(user);
-    } else {
+    if (!userName) {
       toast({
         title: "Error",
         description: "Username is missing. Redirecting to homepage...",
         variant: "destructive",
       });
-      router.push("/");
+      setTimeout(() => router.push("/"), 2000); // Delay redirect
     }
-  }, []);
+  }, [userName]);
 
   const onSubmit = async (data: SendMessageForm) => {
     try {
       const response = await axios.post("/api/send-message", {
-        username,
+        userName,
         content: data.content,
       });
 
@@ -117,9 +112,17 @@ export default function ProfilePage() {
     }
   };
 
+  if (!userName) {
+    return (
+      <div className="text-center mt-10">
+        <p className="text-xl text-red-500">Redirecting to the homepage...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto mt-10">
-      <h1 className="text-3xl font-bold text-center text-black">Welcome, {username}</h1>
+      <h1 className="text-3xl font-bold text-center text-black">Welcome, send messages to {userName}</h1>
 
       {/* Write Message Section */}
       <div className="mt-8">
@@ -146,7 +149,11 @@ export default function ProfilePage() {
               className="bg-black text-white hover:bg-gray-800 mt-4"
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Send"}
+              {form.formState.isSubmitting ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Send"
+              )}
             </Button>
           </form>
         </FormProvider>

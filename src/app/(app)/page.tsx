@@ -9,6 +9,8 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import messages from "@/message.json";
 import ThemeToggle from "@/components/Themetoggle";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const Home = () => {
   return (
@@ -45,6 +47,11 @@ const Home = () => {
             ))}
           </CarouselContent>
         </Carousel>
+        <div className="flex justify-center mt-6 space-x-4">
+          <Link href="/dashboard">
+            <Button className="bg-blue-500 text-white px-4 py-2 rounded">Dashboard</Button>
+          </Link>
+          </div>
       </div>
     </div>
   );
