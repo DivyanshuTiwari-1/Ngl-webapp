@@ -116,11 +116,11 @@ const Page = () => {
   if (!session || !session.user) {
     return <div>Please login</div>;
   }
-  console.log(session);
-  const { username } = session?.user;
+
+  const { userName } = session.user;
 
   const baseUrl = `${window.location.protocol}//${window.location.host}`;
-  const profileUrl = `${baseUrl}/u/${username}`;
+  const profileUrl = `${baseUrl}/u/${userName}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileUrl);

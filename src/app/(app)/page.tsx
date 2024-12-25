@@ -20,7 +20,9 @@ const Home = () => {
 
           <p>Explore Mystery Message - Where your identity remains a secret.</p>
         </section>
-        <ThemeToggle></ThemeToggle>
+        <div className="absolute bottom-4 right-4">
+        <ThemeToggle />
+      </div>
         <Carousel plugins={[Autoplay({ delay: 2000 })]} className="w-full">
           <CarouselContent>
             {messages.map((message, index) => (
