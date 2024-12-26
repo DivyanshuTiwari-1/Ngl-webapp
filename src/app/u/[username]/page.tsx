@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { MessageSchema } from "@/schemas/messageSchema";
+import  { ModeToggle } from "@/components/ThemeIcon";
 
 
 type SendMessageForm = z.infer<typeof MessageSchema>;
@@ -26,11 +27,12 @@ type SendMessageForm = z.infer<typeof MessageSchema>;
 export default function ProfilePage() {
   const [responses, setResponses] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [topic, setTopic] = useState<string>("");
   const { toast } = useToast();
   const router = useRouter();
-  const params = useParams(); // Use this for dynamic route params
-  const { userName } = params; // Destructure `userName` from route params
- console.log(userName);
+  const params = useParams();
+  const { userName } = params;
+
   const form = useForm<SendMessageForm>({
     resolver: zodResolver(MessageSchema),
     defaultValues: {
@@ -45,7 +47,7 @@ export default function ProfilePage() {
         description: "Username is missing. Redirecting to homepage...",
         variant: "destructive",
       });
-      setTimeout(() => router.push("/"), 2000); // Delay redirect
+      setTimeout(() => router.push("/"), 2000);
     }
   }, [userName]);
 
@@ -61,7 +63,7 @@ export default function ProfilePage() {
           title: "Success",
           description: "Message sent successfully!",
         });
-        form.reset(); // Reset form after success
+        form.reset();
       } else {
         toast({
           title: "Error",
@@ -83,18 +85,28 @@ export default function ProfilePage() {
     setResponses([]);
 
     try {
-      const response = await axios.get("/api/suggest-message", {
-        responseType: "stream",
-      });
-      const reader = response.data.getReader();
+      const response = await fetch(`/api/suggest-message?topic=${encodeURIComponent(topic)}`, { method: "GET" });
+      const reader = response.body?.getReader();
       const decoder = new TextDecoder();
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      if (reader) {
+        let result = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-        const chunk = decoder.decode(value);
-        setResponses((prev) => [...prev, chunk]);
+          const chunk = decoder.decode(value, { stream: true });
+          result += chunk;
+          const jsonResponse = JSON.parse(result);
+          const message = jsonResponse.message;
+          const splitResponses = message.split("||").map((res: string) => res.trim());
+          for (const res of splitResponses) {
+            if (res) {
+              setResponses((prev) => [...prev, res]);
+              await new Promise((resolve) => setTimeout(resolve, 500));
+            }
+          }
+        }
       }
 
       toast({
@@ -112,76 +124,112 @@ export default function ProfilePage() {
     }
   };
 
-  if (!userName) {
-    return (
-      <div className="text-center mt-10">
-        <p className="text-xl text-red-500">Redirecting to the homepage...</p>
-      </div>
-    );
-  }
+  const handleSuggestionClick = (suggestion: string) => {
+    form.setValue("content", suggestion);
+  };
 
   return (
-    <div className="max-w-4xl mx-auto mt-10">
-      <h1 className="text-3xl font-bold text-center text-black">Welcome, send messages to {userName}</h1>
+    <>
+      <div className="max-w-4xl mx-auto mt-10">
+        <h1 className="text-3xl font-bold text-center text-black">
+          Welcome, send messages to {userName}
+        </h1>
 
-      {/* Write Message Section */}
-      <div className="mt-8">
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Write a Message</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Type your message here..."
-                      disabled={form.formState.isSubmitting}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+       
+
+        {/* Write Message Section */}
+        <div className="mt-8">
+          <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Write a Message</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Type your message here..."
+                        disabled={form.formState.isSubmitting}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                className="bg-black text-white hover:bg-gray-800 mt-4"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Send"
+                )}
+              </Button>
+            </form>
+          </FormProvider>
+              {/* Topic Input Section */}
+       
+              <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-center gap-4">
+              <FormField
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Enter a Topic</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder="Type a topic here..."
+                        value={topic}
+                        onChange={(e) => setTopic(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+            </form>
+          </FormProvider>
+      
+        </div>
+
+        {/* Suggested Messages Section */}
+        <div className="mt-8">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Get AI Suggested Messages</h2>
+         
             <Button
-              type="submit"
-              className="bg-black text-white hover:bg-gray-800 mt-4"
-              disabled={form.formState.isSubmitting}
+              onClick={fetchStreamingResponse}
+              className="bg-black text-white hover:bg-gray-800"
+              disabled={loading}
             >
-              {form.formState.isSubmitting ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Send"
-              )}
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Get Suggestions"}
             </Button>
-          </form>
-        </FormProvider>
+          </div>
+          <div className="suggestions-container mt-4">
+            {responses.length === 0 && !loading && (
+              <p className="text-gray-500 text-center">No suggestions yet.</p>
+            )}
+            {responses.map((response, index) => (
+              <Button
+                key={index}
+                className="mt-2 w-full text-left bg-white text-black border-spacing-1 border-black hover:bg-gray-200"
+                onClick={() => handleSuggestionClick(response)}
+              >
+                {response}
+              </Button>
+            ))}
+            <div className="absolute bottom-4 right-4">
+        <ModeToggle/>
       </div>
-
-      {/* Suggested Messages Section */}
-      <div className="mt-8">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Suggested Messages</h2>
-          <Button
-            onClick={fetchStreamingResponse}
-            className="bg-black text-white hover:bg-gray-800"
-            disabled={loading}
-          >
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Get Suggestions"}
-          </Button>
-        </div>
-        <div className="border border-gray-200 p-4 bg-gray-50 rounded-md h-96 overflow-y-auto mt-4">
-          {responses.length === 0 && !loading && (
-            <p className="text-gray-500 text-center">No suggestions yet.</p>
-          )}
-          {responses.map((response, index) => (
-            <div key={index} className="mb-2 p-3 bg-white border border-gray-300 rounded shadow-sm">
-              {response}
-            </div>
-          ))}
+          </div>
         </div>
       </div>
-    </div>
+      
+    </>
   );
 }

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import messages from "@/message.json";
-import ThemeToggle from "@/components/Themetoggle";
+import  { ModeToggle } from "@/components/ThemeIcon";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -23,7 +23,7 @@ const Home = () => {
           <p>Explore Mystery Message - Where your identity remains a secret.</p>
         </section>
         <div className="absolute bottom-4 right-4">
-        <ThemeToggle />
+        <ModeToggle />
       </div>
         <Carousel plugins={[Autoplay({ delay: 2000 })]} className="w-full">
           <CarouselContent>
@@ -50,6 +50,9 @@ const Home = () => {
         <div className="flex justify-center mt-6 space-x-4">
           <Link href="/dashboard">
             <Button className="bg-blue-500 text-white px-4 py-2 rounded">Dashboard</Button>
+          </Link>
+          <Link href="/u/sontibhai">
+            <Button>Visit My public profile</Button>
           </Link>
           </div>
       </div>
