@@ -40,16 +40,7 @@ export default function ProfilePage() {
     },
   });
 
-  useEffect(() => {
-    if (!userName) {
-      toast({
-        title: "Error",
-        description: "Username is missing. Redirecting to homepage...",
-        variant: "destructive",
-      });
-      setTimeout(() => router.push("/"), 2000);
-    }
-  }, [userName]);
+ 
 
   const onSubmit = async (data: SendMessageForm) => {
     try {
