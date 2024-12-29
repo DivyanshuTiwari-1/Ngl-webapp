@@ -67,7 +67,7 @@ const Page = () => {
         title: 'Success',
         description: response.data.message,
       });
-      router.replace(`/verify/${username}`);
+      router.replace(`/dashboard`);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
