@@ -1,83 +1,111 @@
 import { dbConnect } from "@/lib/dbConnect";
 import UserModel from "@/models/User";
-import { getServerSession, User } from "next-auth";
+import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/options";
 
-
 export async function POST(req: Request) {
-    await dbConnect();
-    const session = await getServerSession(authOptions);
-    const user: User = session?.user as User
-    if (!session || !user) {
-        return Response.json({
-            success: false,
-            message: "not authenticated"
-        }, { status: 401})
-    }
-    const userId = user._id;
+  await dbConnect();
+  const session = await getServerSession(authOptions);
+  const user = session?.user;
 
-    try {
-       
-        const acceptingMessage = await req.json();
-        const updatedUser = UserModel.findByIdAndUpdate(
-            userId,
-            { isAcceptingMessage: acceptingMessage },
-            { new: true }
-        )
+  if (!session || !user) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Not authenticated",
+      }),
+      { status: 401 }
+    );
+  }
 
-        if (!updatedUser) {
-            return Response.json({
-                success: false,
-                message: " failed to cheack wheather user accepting messageor not "
-            }, { status: 500 })
-        }
-        return Response.json({
-            success: true,
-            message: " successfully changed the status of the accepting messages  ",
-            updatedUser
-        }, { status: 200})
+  const userId = user._id;
 
-    } catch (error) {
-        console.log("error cheacking wheather user accepting messageor not ", error)
-        return Response.json({
-            success: false,
-            message: "rror cheacking wheather user accepting messageor not"
-        }, { status: 500 })
+  try {
+    const { acceptMessages } = await req.json();
+
+    
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { isAcceptingMessage: acceptMessages },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Failed to update acceptingMessage status",
+        }),
+        { status: 500 }
+      );
     }
 
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Successfully updated acceptingMessage status",
+        user: updatedUser,
+      }),
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error updating acceptingMessage status: ", error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Error updating acceptingMessage status",
+      }),
+      { status: 500 }
+    );
+  }
 }
 
-export async function GET(req:Request) {
-    await dbConnect();
-    const session = await getServerSession(authOptions);
-    const user: User = session?.user as User
-    if (!session || !user) {
-        return Response.json({
-            success: false,
-            message: "not authenticated"
-        }, { status: 401})
-    }
-    const userId = user._id;
-  try {
-  
-        const foundUser =await UserModel.findById(userId);
-        if (!foundUser) {
-            return Response.json({
-                success: false,
-                message: "User not found",
-            }, { status: 404 })
-        }
-        return Response.json({
-            success: true,
-            isAcceptingMessage:foundUser.isAcceptingMessage
-        }, { status: 200 })
+export async function GET(req: Request) {
+  await dbConnect();
+  const session = await getServerSession(authOptions);
+  const user = session?.user;
 
-  } catch (error) {
-    console.log("error cheacking wheather user accepting messageor not ", error)
-        return Response.json({
-            success: false,
-            message: "error cheacking wheather user accepting messageor not"
-        }, { status: 500 })
+  if (!session || !user) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Not authenticated",
+      }),
+      { status: 401 }
+    );
   }
-    
+
+  const userId = user._id;
+
+  try {
+    const foundUser = await UserModel.findById(userId);
+
+    if (!foundUser) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "User not found",
+        }),
+        { status: 404 }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        isAcceptingMessage: foundUser.isAcceptingMessage,
+      }),
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error fetching acceptingMessage status: ", error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Error fetching acceptingMessage status",
+      }),
+      { status: 500 }
+    );
+  }
 }

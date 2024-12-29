@@ -40,7 +40,7 @@ const Page = () => {
     setIsSwitchLoading(true);
 
     try {
-      const response = await axios.get("/api/accept-messages");
+      const response = await axios.get<ApiResponse>("/api/accept-message");
       setValue("acceptMessages", response.data.isAcceptingMessage);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
@@ -54,48 +54,48 @@ const Page = () => {
     }
   }, [setValue, toast]);
 
-  const fetchMessages = useCallback(
-    async (refresh: boolean = false) => {
-      setIsLoading(true);
-      setIsSwitchLoading(false);
+  const fetchMessages = useCallback(async (refresh: boolean = false) => {
+    setIsLoading(true);
+    setIsSwitchLoading(false);
 
-      try {
-        const response = await axios.get<ApiResponse>("/api/get-messages");
-        setMessages(response.data.Messages || []);
+    try {
+      const response = await axios.get<ApiResponse>("/api/get-message");
 
-        if (refresh) {
-          toast({
-            title: "Messages fetched successfully",
-            description: "Successfully fetched messages",
-            variant: "default",
-          });
-        }
-      } catch (error) {
-        const axiosError = error as AxiosError<ApiResponse>;
+      // Correctly access messages from the response
+     
+      setMessages(response.data.Messages|| []);
+      
+      if (refresh) {
         toast({
-          title: "Error",
-          description: axiosError.response?.data.message || "Failed to fetch messages",
-          variant: "destructive",
+          title: "Messages fetched successfully",
+          description: "Successfully fetched messages",
+          variant: "default",
         });
-      } finally {
-        setIsLoading(false);
-        setIsSwitchLoading(false);
       }
-    },
-    [setValue, setMessages, toast]
-  );
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast({
+        title: "Error",
+        description: axiosError.response?.data.message || "Failed to fetch messages",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+      setIsSwitchLoading(false);
+    }
+  }, [setValue, setMessages, toast]);
 
   useEffect(() => {
     if (!session || !session.user) return;
 
     fetchMessages();
     fetchAcceptMessage();
-  }, [session, setValue, fetchAcceptMessage, fetchMessages]);
+  }, [session, fetchAcceptMessage, fetchMessages]);
 
   const handleSwitchChange = async () => {
     try {
-      const response = await axios.post<ApiResponse>("/api/accept-messages", {
-        acceptMessages: !acceptMessages,
+      const response = await axios.post<ApiResponse>("/api/accept-message", {
+        acceptMessages: acceptMessages,
       });
 
       setValue("acceptMessages", !acceptMessages);

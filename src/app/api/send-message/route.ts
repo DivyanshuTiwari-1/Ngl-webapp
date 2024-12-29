@@ -5,10 +5,10 @@ import { authOptions } from "../auth/options";
 
 export async function POST(req:Request) {
     await dbConnect();
-     const {username,content}= await req.json();
+     const {userName,content}= await req.json();
 
      try {
-        const user = await UserModel.findOne({username});
+        const user = await UserModel.findOne({userName});
         if(!user){
             return Response.json({
                 success: false,
