@@ -14,7 +14,10 @@ import { Button } from "@/components/ui/button";
 
 const Home = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen ">
+    <div className="flex items-center justify-center min-h-screen relative">
+      <div className="absolute bottom-4 right-4">
+        <ModeToggle />
+      </div>
       <div className="w-full max-w-md">
      
         <section className="text-center mb-6 md:text-lg">
@@ -22,9 +25,6 @@ const Home = () => {
 
           <p>Explore Mystery Message - Where your identity remains a secret.</p>
         </section>
-        <div className="absolute bottom-4 right-4">
-        <ModeToggle />
-      </div>
         <Carousel plugins={[Autoplay({ delay: 2000 })]} className="w-full">
           <CarouselContent>
             {messages.map((message, index) => (
